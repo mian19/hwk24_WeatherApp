@@ -9,17 +9,33 @@ import UIKit
 import CoreLocation
 
 class ViewController: UIViewController {
+    
     let myAPIKeyForCity = "7c6c27539d3385b12169493729304bbe"
     let myAPIKeyForWeather = "a3096c5ad0644d94a1e73625221304"
     let locationManager = CLLocationManager()
-    private var setOfMyCities: Set<City> = []
-    private var Pinsk = City(name: "Pinsk", latitude: 52.1113862, longetude: 26.1025274, country: "BY", state: nil)
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
+    let defaults = UserDefaults.standard
+    var arrayOfWeatherForMyCities: [Weather] = []
+    var arrayOfMyCities: [City] {
+        get {
+            if let data = defaults.value(forKey: "MyCities") as? Data {
+                return try! PropertyListDecoder().decode([City].self, from: data)
+            } else {
+                return []
+            }
+        }
         
-        startLocationManager()
+        set {
+            if let data = try? PropertyListEncoder().encode(newValue) {
+                defaults.set(data, forKey: "MyCities")
+            }
+        }
     }
+    
+    override func viewDidLoad() {
+           super.viewDidLoad()
+        startLocationManager()
+           
+       }
     
     private func startLocationManager() {
         locationManager.requestWhenInUseAuthorization()
@@ -27,17 +43,27 @@ class ViewController: UIViewController {
         if CLLocationManager.locationServicesEnabled() {
             locationManager.delegate = self
             locationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers
-            locationManager.startUpdatingLocation()
+            locationManager.requestLocation()
         }
     }
-    
-    private func addCityToMySet(city: City) {
-        if !setOfMyCities.contains(city) {
-            setOfMyCities.insert(city)
-        }
-    }
-    
 
+    private func addCityToMyCities(city: City) {
+        arrayOfMyCities.append(City(name: city.name, latitude: city.latitude, longetude: city.longetude, country: city.country, state: city.state, weather: nil))
+    }
+ 
+}
+
+extension ViewController: CLLocationManagerDelegate {
+   
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        if let lastLocation = locations.last {
+            networking(cityInfo: lastLocation.coordinate)
+        }
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+            print("Failed to find user's location: \(error.localizedDescription)")
+        }
     
     private func networking<T>(cityInfo: T) {
         var urlString = ""
@@ -70,18 +96,52 @@ class ViewController: UIViewController {
             }
             guard let data = data else { return }
             
-                switch tag {
-                case 1:
-                    self.getWeather(city: infoForRequest as! City, data: data, error: error)
-                case 2:
-                    self.getCityInfoByCityName(cityName: infoForRequest as! String, data: data, error: error)
-                case 3:
-                    self.getCityInfoByCoordinates(coordinates: infoForRequest as! CLLocationCoordinate2D, data: data, error: error)
-                default:
-                    break
-                }
+            switch tag {
+            case 1:
+                self.getWeather(city: infoForRequest as! City, data: data, error: error)
+            case 2:
+                self.getCityInfoByCityName(cityName: infoForRequest as! String, data: data, error: error)
+            case 3:
+                self.getCityInfoByCoordinates(coordinates: infoForRequest as! CLLocationCoordinate2D, data: data, error: error)
+            default:
+                break
+            }
             
         }.resume()
+    }
+    
+    private func getCityInfoByCoordinates(coordinates: CLLocationCoordinate2D, data: Data, error: Error?) {
+         
+                 do {
+                     let decoder = JSONDecoder()
+                     let gettedCities = try decoder.decode([City].self, from: data)
+                     if let city = gettedCities.last {
+                         if !arrayOfMyCities.contains(where: { city == $0 }) {
+                            addCityToMyCities(city: city)
+                         }
+                     }
+                     
+                     for city in arrayOfMyCities {
+                         networking(cityInfo: city)
+                     }
+                     
+                     print("It's my CITIES:\n")
+                     print(arrayOfMyCities)
+                     print("-------------\n\n\n\n")
+                 } catch {
+                     print(error.localizedDescription)
+                 }
+             }
+    
+    private func getCityInfoByCityName(cityName: String, data: Data, error: Error?) {
+        
+        do {
+            let decoder = JSONDecoder()
+            let gettingCities = try decoder.decode([City].self, from: data)
+            print (gettingCities)
+        } catch {
+            print(error.localizedDescription)
+        }
     }
     
     fileprivate func getWeather(city: City, data: Data, error: Error?) {
@@ -89,49 +149,11 @@ class ViewController: UIViewController {
         do {
             let decoder = JSONDecoder()
             let gettingWeather = try decoder.decode(Weather.self, from: data)
-            print (gettingWeather)
+                arrayOfWeatherForMyCities.append(gettingWeather)
         } catch {
             print(error.localizedDescription)
         }
     }
     
-    fileprivate func getCityInfoByCityName(cityName: String, data: Data, error: Error?) {
-            
-            do {
-                let decoder = JSONDecoder()
-                let gettingCities = try decoder.decode([CityJSON].self, from: data)
-                print (gettingCities)
-            } catch {
-                print(error.localizedDescription)
-            }
-    }
-    
-    fileprivate func getCityInfoByCoordinates(coordinates: CLLocationCoordinate2D, data: Data, error: Error?) {
-     
-            do {
-                
-                let decoder = JSONDecoder()
-                let gettedCities = try decoder.decode([CityJSON].self, from: data)
-                print(gettedCities)
-                if let city = gettedCities.last {
-                    print(city)
-                }
-            } catch {
-                print(error.localizedDescription)
-            }
-     }
-            
-   
-}
 
-extension ViewController: CLLocationManagerDelegate {
-   
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        if let lastLocation = locations.last {
-            networking(cityInfo: Pinsk)
-            networking(cityInfo: "Minsk")
-            networking(cityInfo: CLLocationCoordinate2D(latitude: 52.1113862, longitude: 26.1025274))
-            print("------")
-        }
-    }
 }

@@ -8,7 +8,7 @@
 import Foundation
 
 
-struct CityJSON: Decodable {
+struct City: Codable, Equatable {
     let name: String
     let latitude: Double
     let longetude: Double
@@ -26,31 +26,31 @@ struct CityJSON: Decodable {
     }
 }
 
-struct Weather: Decodable {
+struct Weather: Codable, Equatable {
     let current: Current
     let forecast: Forecast
 }
 
-struct Current: Decodable {
+struct Current: Codable, Equatable {
     let temp_c: Double
     let humidity: Double
     let wind_kph: Double
     let condition: Condition
 }
 
-struct Condition: Decodable {
+struct Condition: Codable, Equatable {
     let icon: String
 }
 
-struct Forecast: Decodable {
+struct Forecast: Codable, Equatable {
     let forecastday: [Forecastday]
 }
 
-struct Forecastday: Decodable {
+struct Forecastday: Codable, Equatable {
     let day: Day
 }
 
-struct Day: Decodable {
+struct Day: Codable, Equatable {
     let mintemp_c: Double
     let maxtemp_c: Double
     let maxwind_kph: Double
