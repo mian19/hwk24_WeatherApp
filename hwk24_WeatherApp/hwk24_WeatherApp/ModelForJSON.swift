@@ -14,7 +14,6 @@ struct City: Codable, Equatable {
     let longetude: Double
     let country: String
     let state: String?
-    let weather: Weather?
     
     enum CodingKeys: String, CodingKey {
         case name
@@ -22,19 +21,25 @@ struct City: Codable, Equatable {
         case longetude = "lon"
         case country
         case state
-        case weather
     }
 }
 
 struct Weather: Codable, Equatable {
+    let location: Location
     let current: Current
     let forecast: Forecast
+}
+
+struct Location: Codable, Equatable {
+    let name, region, country: String
+
 }
 
 struct Current: Codable, Equatable {
     let temp_c: Double
     let humidity: Double
     let wind_kph: Double
+    let is_day: Int
     let condition: Condition
 }
 
