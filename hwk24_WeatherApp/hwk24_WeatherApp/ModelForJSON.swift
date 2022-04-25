@@ -52,6 +52,7 @@ struct Forecast: Codable, Equatable {
 }
 
 struct Forecastday: Codable, Equatable {
+    let date: String
     let day: Day
 }
 

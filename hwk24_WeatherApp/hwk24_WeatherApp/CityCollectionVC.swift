@@ -38,7 +38,6 @@ class CityCollectionVC: UICollectionViewController, UICollectionViewDelegateFlow
     
         layout.scrollDirection = .horizontal
         
-        collectionView.backgroundColor = .green
         collectionView.register(CityCollectionViewCell.self, forCellWithReuseIdentifier: CityCollectionViewCell.identifier)
         collectionView.collectionViewLayout = layout
         collectionView.isPagingEnabled = true
@@ -47,8 +46,11 @@ class CityCollectionVC: UICollectionViewController, UICollectionViewDelegateFlow
         startLoadingWeather()
         
         bar.frame = CGRect(x: 0, y: view.bounds.maxY - 50, width: view.bounds.width, height: 50)
-        bar.backgroundColor = .red
         view.addSubview(bar)
+    }
+    
+    override var prefersStatusBarHidden: Bool {
+        return true
     }
     
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -56,7 +58,7 @@ class CityCollectionVC: UICollectionViewController, UICollectionViewDelegateFlow
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: view.frame.width, height: view.frame.height - 50)
+        return CGSize(width: view.frame.width, height: view.frame.height)
     }
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -64,6 +66,8 @@ class CityCollectionVC: UICollectionViewController, UICollectionViewDelegateFlow
         
         if let weather = arrayOfWeatherForMyCities?[indexPath.row] {
             cell.configure(inputWeather: weather)
+        } else {
+            cell.configure(inputWeather: getEmptyWeather())
         }
         
         return cell
@@ -89,9 +93,7 @@ class CityCollectionVC: UICollectionViewController, UICollectionViewDelegateFlow
             self.network.requestWeather(urlString: urlWeather, completion: { result in
                 
                 self.arrayOfWeatherForMyCities?.append(result)
-                print(self.arrayOfWeatherForMyCities)
                 DispatchQueue.main.async {
-                    print(self.arrayOfWeatherForMyCities)
                     self.collectionView.reloadData()
                 }
             })
@@ -100,6 +102,11 @@ class CityCollectionVC: UICollectionViewController, UICollectionViewDelegateFlow
     
     private func addCityToMyCities(city: City) {
         arrayOfMyCities?.append(City(name: city.name, latitude: city.latitude, longetude: city.longetude, country: city.country, state: city.state))
+    }
+    
+    private func getEmptyWeather() -> Weather {
+        let emptyWeather = Weather(location: Location(name: "N/A", region: "N/A", country: "N/A"), current: Current(temp_c: 0, humidity: 0, wind_kph: 0, is_day: 0, condition: Condition(icon: "night/122")), forecast: Forecast(forecastday: [.init(date: "N/A", day: Day(mintemp_c: 0, maxtemp_c: 0, maxwind_kph: 0, avghumidity: 0, condition: Condition(icon: "night/122")))]))
+        return emptyWeather
     }
     
 }
@@ -115,9 +122,7 @@ extension CityCollectionVC: CLLocationManagerDelegate {
                 if let city = result?.last{
                     if !(self.arrayOfMyCities?.contains(where: { city == $0 }) ?? false) {
                         self.addCityToMyCities(city: city)
-                        
                     }
-                    print(self.arrayOfMyCities)
                 }
             })
         }
