@@ -26,6 +26,7 @@ class CityCollectionViewCell: UICollectionViewCell {
     }
     
     func configure(inputWeather: Weather) {
+
         currentWeather = inputWeather
         let elements = [cityNameLabel, currentTempLabel, currentImage, humidityLabel, windLabel, forecastTable]
         cityNameLabel.text = inputWeather.location.name

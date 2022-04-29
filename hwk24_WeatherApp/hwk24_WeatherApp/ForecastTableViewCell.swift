@@ -25,6 +25,7 @@ class ForecastTableViewCell: UITableViewCell {
     }
     
     func configure(inputWeather: Weather, day: Int) {
+        selectionStyle = .none
         let elements = [dayLabel, icoView, maxLabel, minLabel]
         dayLabel.text = getDayFromDate(dateString: inputWeather.forecast.forecastday[day].date)
         

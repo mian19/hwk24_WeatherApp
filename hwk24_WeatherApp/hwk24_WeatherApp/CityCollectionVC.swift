@@ -11,14 +11,14 @@ import CoreLocation
 class CityCollectionVC: UICollectionViewController, UICollectionViewDelegateFlowLayout {
     
     private let network = Networking()
-    private let bar = UIToolbar()
+    private var bar: UIToolbar!
     private let layout = UICollectionViewFlowLayout()
     private let myAPIKeyForCity = "7c6c27539d3385b12169493729304bbe"
     private let myAPIKeyForWeather = "a3096c5ad0644d94a1e73625221304"
     private let defaults = UserDefaults.standard
     private let locationManager = CLLocationManager()
     private var arrayOfWeatherForMyCities: [Weather]? = []
-    private var arrayOfMyCities: [City]? {
+    var arrayOfMyCities: [City]? {
         get {
             if let data = defaults.value(forKey: "MyCities") as? Data {
                 return try! PropertyListDecoder().decode([City].self, from: data)
@@ -33,6 +33,8 @@ class CityCollectionVC: UICollectionViewController, UICollectionViewDelegateFlow
         }
     }
     
+
+    
     override func viewDidLoad() {
         super.viewDidLoad()
     
@@ -41,16 +43,46 @@ class CityCollectionVC: UICollectionViewController, UICollectionViewDelegateFlow
         collectionView.register(CityCollectionViewCell.self, forCellWithReuseIdentifier: CityCollectionViewCell.identifier)
         collectionView.collectionViewLayout = layout
         collectionView.isPagingEnabled = true
-        
-        startLocationManager()
-        startLoadingWeather()
-        
-        bar.frame = CGRect(x: 0, y: view.bounds.maxY - 50, width: view.bounds.width, height: 50)
+          
+        bar = UIToolbar(frame: CGRect(x: 0, y: view.bounds.maxY - 50, width: view.bounds.width, height: 50))
+        let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: self, action: nil)
+        let myCitiesButton = UIBarButtonItem(image: UIImage(systemName: "list.dash"), style: .done, target: self, action: #selector(goToMyCities))
+        bar.items = [flexibleSpace, myCitiesButton]
+        bar.sizeToFit()
         view.addSubview(bar)
+       
+        
+        
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        if arrayOfMyCities?.count == 0 {
+            goToMyCities()
+        }
+
+        if arrayOfWeatherForMyCities != [] {
+            arrayOfWeatherForMyCities = []
+        }
+        //startLoadingWeather()
+    }
+    
+    func onDataUpdate(index: Int) {
+        let i = IndexPath(item: index, section: 0)
+           
+        collectionView.scrollToItem(at: i, at: .centeredHorizontally, animated: true)
+        
+    }
+
+  
     override var prefersStatusBarHidden: Bool {
         return true
+    }
+    
+    @objc func goToMyCities() {
+        let storyboard = UIStoryboard(name: "TableOfCitiesViewController", bundle: Bundle.main)
+        let viewController = storyboard.instantiateInitialViewController() as! TableOfCitiesViewController
+        viewController.modalPresentationStyle = .fullScreen
+        self.present(viewController, animated: true, completion: nil)
     }
     
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -66,10 +98,7 @@ class CityCollectionVC: UICollectionViewController, UICollectionViewDelegateFlow
         
         if let weather = arrayOfWeatherForMyCities?[indexPath.row] {
             cell.configure(inputWeather: weather)
-        } else {
-            cell.configure(inputWeather: getEmptyWeather())
         }
-        
         return cell
     }
     
@@ -79,13 +108,24 @@ class CityCollectionVC: UICollectionViewController, UICollectionViewDelegateFlow
     
     private func startLocationManager() {
         locationManager.requestWhenInUseAuthorization()
-        
+        print(locationManager.authorizationStatus)
         if CLLocationManager.locationServicesEnabled() {
             locationManager.delegate = self
             locationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers
+            if locationManager.authorizationStatus == .authorizedWhenInUse {
             locationManager.requestLocation()
+            print(locationManager)
+               
+            }
         }
     }
+    
+//    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+//        if status == .authorizedWhenInUse {
+//            locationManager.requestLocation()
+//
+//        }
+//    }
     
     private func startLoadingWeather() {
         self.arrayOfMyCities?.forEach{
@@ -102,12 +142,10 @@ class CityCollectionVC: UICollectionViewController, UICollectionViewDelegateFlow
     
     private func addCityToMyCities(city: City) {
         arrayOfMyCities?.append(City(name: city.name, latitude: city.latitude, longetude: city.longetude, country: city.country, state: city.state))
+        collectionView.reloadData()
     }
     
-    private func getEmptyWeather() -> Weather {
-        let emptyWeather = Weather(location: Location(name: "N/A", region: "N/A", country: "N/A"), current: Current(temp_c: 0, humidity: 0, wind_kph: 0, is_day: 0, condition: Condition(icon: "night/122")), forecast: Forecast(forecastday: [.init(date: "N/A", day: Day(mintemp_c: 0, maxtemp_c: 0, maxwind_kph: 0, avghumidity: 0, condition: Condition(icon: "night/122")))]))
-        return emptyWeather
-    }
+
     
 }
 
@@ -122,9 +160,12 @@ extension CityCollectionVC: CLLocationManagerDelegate {
                 if let city = result?.last{
                     if !(self.arrayOfMyCities?.contains(where: { city == $0 }) ?? false) {
                         self.addCityToMyCities(city: city)
+                        print(self.arrayOfMyCities)
+                        
                     }
                 }
             })
+
         }
     }
     

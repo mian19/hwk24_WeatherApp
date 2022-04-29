@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		673C2ED1281C211700FED722 /* AddCityViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 673C2ED0281C211700FED722 /* AddCityViewController.swift */; };
+		673C2ED3281C212900FED722 /* AddCityViewController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 673C2ED2281C212900FED722 /* AddCityViewController.storyboard */; };
 		673F76E52804B239000B1460 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 673F76E42804B239000B1460 /* AppDelegate.swift */; };
 		673F76E72804B239000B1460 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 673F76E62804B239000B1460 /* SceneDelegate.swift */; };
 		673F76EC2804B239000B1460 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 673F76EA2804B239000B1460 /* Main.storyboard */; };
@@ -23,6 +25,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		673C2ED0281C211700FED722 /* AddCityViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCityViewController.swift; sourceTree = "<group>"; };
+		673C2ED2281C212900FED722 /* AddCityViewController.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = AddCityViewController.storyboard; sourceTree = "<group>"; };
 		673F76E12804B238000B1460 /* hwk24_WeatherApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = hwk24_WeatherApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		673F76E42804B239000B1460 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		673F76E62804B239000B1460 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -51,6 +55,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		673C2ECF281C20FD00FED722 /* AddCityViewController */ = {
+			isa = PBXGroup;
+			children = (
+				673C2ED0281C211700FED722 /* AddCityViewController.swift */,
+				673C2ED2281C212900FED722 /* AddCityViewController.storyboard */,
+			);
+			path = AddCityViewController;
+			sourceTree = "<group>";
+		};
 		673F76D82804B238000B1460 = {
 			isa = PBXGroup;
 			children = (
@@ -75,10 +88,11 @@
 				673F76E62804B239000B1460 /* SceneDelegate.swift */,
 				6762DAA42805BEF7000B35DC /* ModelForJSON.swift */,
 				67CC50FC280F25B400589397 /* Networking.swift */,
+				676C6245281696380078C304 /* ForecastTableViewCell.swift */,
+				673C2ECF281C20FD00FED722 /* AddCityViewController */,
 				676C624228168CC40078C304 /* TableOfCitiesViewController */,
 				67733E6F280E031800507E35 /* CityCollectionVC.swift */,
 				67D53A91281475D100E14159 /* CityCollectionViewCell.swift */,
-				676C6245281696380078C304 /* ForecastTableViewCell.swift */,
 				673F76EA2804B239000B1460 /* Main.storyboard */,
 				673F76ED2804B23C000B1460 /* Assets.xcassets */,
 				673F76EF2804B23C000B1460 /* LaunchScreen.storyboard */,
@@ -158,6 +172,7 @@
 				673F76EE2804B23C000B1460 /* Assets.xcassets in Resources */,
 				676C624428168CEC0078C304 /* TableOfCitiesViewController.storyboard in Resources */,
 				673F76EC2804B239000B1460 /* Main.storyboard in Resources */,
+				673C2ED3281C212900FED722 /* AddCityViewController.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -173,6 +188,7 @@
 				67733E6E280DD14E00507E35 /* File.swift in Sources */,
 				676C624128168CBE0078C304 /* TableOfCitiesViewController.swift in Sources */,
 				673F76E52804B239000B1460 /* AppDelegate.swift in Sources */,
+				673C2ED1281C211700FED722 /* AddCityViewController.swift in Sources */,
 				673F76E72804B239000B1460 /* SceneDelegate.swift in Sources */,
 				676C6246281696380078C304 /* ForecastTableViewCell.swift in Sources */,
 				6762DAA52805BEF7000B35DC /* ModelForJSON.swift in Sources */,
@@ -328,11 +344,13 @@
 				DEVELOPMENT_TEAM = 67A656CXMY;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = hwk24_WeatherApp/Info.plist;
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Hi! I need your coordinates =)";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Hi! I need your coordinates =)";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.3;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -356,11 +374,13 @@
 				DEVELOPMENT_TEAM = 67A656CXMY;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = hwk24_WeatherApp/Info.plist;
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Hi! I need your coordinates =)";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Hi! I need your coordinates =)";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.3;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
