@@ -9,6 +9,7 @@ import UIKit
 
 class TableOfCitiesViewController: UIViewController {
     
+    var myCitiesLabel: UILabel!
     var backButton: UIButton!
     var addButton: UIButton!
     private var table = UITableView()
@@ -30,16 +31,30 @@ class TableOfCitiesViewController: UIViewController {
     
     override func loadView() {
         super.loadView()
-        backButton = UIButton(frame: CGRect(x: 5, y: 310, width: 80, height: 30))
-        addButton = UIButton(frame: CGRect(x: view.bounds.maxX - 85, y: 310, width: 80, height: 30))
+        
+        myCitiesLabel = UILabel()
+        backButton = UIButton()
+        addButton = UIButton()
+        
+        myCitiesLabel.translatesAutoresizingMaskIntoConstraints = false
+        table.translatesAutoresizingMaskIntoConstraints = false
+        backButton.translatesAutoresizingMaskIntoConstraints = false
+        addButton.translatesAutoresizingMaskIntoConstraints = false
+        
+        view.addSubview(myCitiesLabel)
+        view.addSubview(table)
         view.addSubview(backButton)
         view.addSubview(addButton)
+       
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        table.frame = CGRect(origin: CGPoint(x: 0, y: 0), size: CGSize(width: view.bounds.width, height: 300))
-        view.addSubview(table)
+        
+        myCitiesLabel.text = "My Cities"
+        myCitiesLabel.font = UIFont.systemFont(ofSize: 40)
+        myCitiesLabel.textAlignment = .center
+        
         table.delegate = self
         table.dataSource = self
         
@@ -51,7 +66,32 @@ class TableOfCitiesViewController: UIViewController {
         addButton.setTitle("Add", for: .normal)
         addButton.addTarget(self, action: #selector(toAdd), for: .touchUpInside)
         
+        setElements()
         
+    }
+    
+    private func setElements() {
+        NSLayoutConstraint.activate([
+        
+            myCitiesLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 30),
+            myCitiesLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            myCitiesLabel.widthAnchor.constraint(equalToConstant: 200),
+            myCitiesLabel.heightAnchor.constraint(equalToConstant: 60),
+            
+            table.widthAnchor.constraint(equalTo: view.widthAnchor),
+            table.heightAnchor.constraint(equalToConstant: view.bounds.height - 250),
+            table.topAnchor.constraint(equalTo: myCitiesLabel.bottomAnchor),
+            table.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            
+            backButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10),
+            backButton.topAnchor.constraint(equalTo: table.bottomAnchor),
+            backButton.widthAnchor.constraint(equalToConstant: 50),
+            
+            view.trailingAnchor.constraint(equalTo: addButton.trailingAnchor, constant: 10),
+            addButton.topAnchor.constraint(equalTo: backButton.topAnchor),
+            addButton.widthAnchor.constraint(equalToConstant: 50)
+            
+        ])
     }
     
     @objc func toMain() {
