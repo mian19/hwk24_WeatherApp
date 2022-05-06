@@ -16,7 +16,6 @@ class ForecastTableViewCell: UITableViewCell {
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        
         backgroundColor = UIColor(white: 1, alpha: 0.1)
     }
     
@@ -63,7 +62,6 @@ class ForecastTableViewCell: UITableViewCell {
         formatter.dateFormat = "EEEE"
         let dayInWeek = formatter.string(from: date)
         return dayInWeek
-        
     }
     
     private func setElements() {
@@ -87,7 +85,6 @@ class ForecastTableViewCell: UITableViewCell {
             minLabel.widthAnchor.constraint(equalToConstant: bounds.width * 0.15)
             
         ])
-        
     }
     
     

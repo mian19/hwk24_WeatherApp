@@ -14,6 +14,7 @@ struct City: Codable, Equatable {
     let longetude: Double
     let country: String
     let state: String?
+   
     
     enum CodingKeys: String, CodingKey {
         case name
@@ -21,6 +22,7 @@ struct City: Codable, Equatable {
         case longetude = "lon"
         case country
         case state
+       
     }
 }
 

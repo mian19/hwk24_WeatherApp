@@ -45,7 +45,7 @@ class TableOfCitiesViewController: UIViewController {
         view.addSubview(table)
         view.addSubview(backButton)
         view.addSubview(addButton)
-       
+        
     }
     
     override func viewDidLoad() {
@@ -67,12 +67,16 @@ class TableOfCitiesViewController: UIViewController {
         addButton.addTarget(self, action: #selector(toAdd), for: .touchUpInside)
         
         setElements()
-        
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        navigationController?.isNavigationBarHidden = true
+        table.reloadData()
     }
     
     private func setElements() {
         NSLayoutConstraint.activate([
-        
+            
             myCitiesLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 30),
             myCitiesLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             myCitiesLabel.widthAnchor.constraint(equalToConstant: 200),
@@ -96,17 +100,15 @@ class TableOfCitiesViewController: UIViewController {
     
     @objc func toMain() {
         if self.arrayOfMyCities?.count != 0 {
-            self.dismiss(animated: false, completion: nil)
+            navigationController?.popViewController(animated: true)
         }
-        
     }
     
     @objc func toAdd() {
         let storyboard = UIStoryboard(name: "AddCityViewController", bundle: Bundle.main)
         let viewController = storyboard.instantiateInitialViewController() as! AddCityViewController
-        self.present(viewController, animated: true, completion: nil)
+        navigationController?.pushViewController(viewController, animated: true)
     }
-
 }
 
 extension TableOfCitiesViewController: UITableViewDelegate & UITableViewDataSource {
@@ -121,7 +123,6 @@ extension TableOfCitiesViewController: UITableViewDelegate & UITableViewDataSour
         if let city = arrayOfMyCities?[indexPath.row] {
             conf.text = "\(city.name)" + ", \(city.country)"
             conf.secondaryText = "\(city.state ?? "")"
-            
         }
         cell.contentConfiguration = conf
         return cell
@@ -131,7 +132,6 @@ extension TableOfCitiesViewController: UITableViewDelegate & UITableViewDataSour
         let actionDelete = UIContextualAction(style: .destructive, title: "Remove") {_,_,_ in
             self.arrayOfMyCities?.remove(at: indexPath.row)
             tableView.reloadData()
-            
         }
         let actions = UISwipeActionsConfiguration(actions: [actionDelete])
         

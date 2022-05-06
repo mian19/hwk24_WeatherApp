@@ -33,47 +33,35 @@ class CityCollectionVC: UICollectionViewController, UICollectionViewDelegateFlow
         }
     }
     
-
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-    
+        
+        navigationController?.isNavigationBarHidden = true
         layout.scrollDirection = .horizontal
         
         collectionView.register(CityCollectionViewCell.self, forCellWithReuseIdentifier: CityCollectionViewCell.identifier)
         collectionView.collectionViewLayout = layout
         collectionView.isPagingEnabled = true
-          
+        
         bar = UIToolbar(frame: CGRect(x: 0, y: view.bounds.maxY - 50, width: view.bounds.width, height: 50))
         let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: self, action: nil)
         let myCitiesButton = UIBarButtonItem(image: UIImage(systemName: "list.dash"), style: .done, target: self, action: #selector(goToMyCities))
         bar.items = [flexibleSpace, myCitiesButton]
         bar.sizeToFit()
         view.addSubview(bar)
-       
-        
-        
     }
     
-    override func viewDidAppear(_ animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         if arrayOfMyCities?.count == 0 {
             goToMyCities()
         }
-
-        if arrayOfWeatherForMyCities != [] {
-            arrayOfWeatherForMyCities = []
-        }
-        //startLoadingWeather()
+        
+        arrayOfWeatherForMyCities = []
+        
+        locationManager.requestWhenInUseAuthorization()
+        startLoadingWeather()
     }
     
-    func onDataUpdate(index: Int) {
-        let i = IndexPath(item: index, section: 0)
-           
-        collectionView.scrollToItem(at: i, at: .centeredHorizontally, animated: true)
-        
-    }
-
-  
     override var prefersStatusBarHidden: Bool {
         return true
     }
@@ -82,7 +70,7 @@ class CityCollectionVC: UICollectionViewController, UICollectionViewDelegateFlow
         let storyboard = UIStoryboard(name: "TableOfCitiesViewController", bundle: Bundle.main)
         let viewController = storyboard.instantiateInitialViewController() as! TableOfCitiesViewController
         viewController.modalPresentationStyle = .fullScreen
-        self.present(viewController, animated: true, completion: nil)
+        navigationController?.pushViewController(viewController, animated: true)
     }
     
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -90,7 +78,7 @@ class CityCollectionVC: UICollectionViewController, UICollectionViewDelegateFlow
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: view.frame.width, height: view.frame.height)
+        return CGSize(width: view.bounds.width, height: view.bounds.height)
     }
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -98,7 +86,9 @@ class CityCollectionVC: UICollectionViewController, UICollectionViewDelegateFlow
         
         if let weather = arrayOfWeatherForMyCities?[indexPath.row] {
             cell.configure(inputWeather: weather)
+            cell.reloadInputViews()
         }
+        
         return cell
     }
     
@@ -106,71 +96,20 @@ class CityCollectionVC: UICollectionViewController, UICollectionViewDelegateFlow
         0
     }
     
-    private func startLocationManager() {
-        locationManager.requestWhenInUseAuthorization()
-        print(locationManager.authorizationStatus)
-        if CLLocationManager.locationServicesEnabled() {
-            locationManager.delegate = self
-            locationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers
-            if locationManager.authorizationStatus == .authorizedWhenInUse {
-            locationManager.requestLocation()
-            print(locationManager)
-               
-            }
-        }
-    }
-    
-//    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
-//        if status == .authorizedWhenInUse {
-//            locationManager.requestLocation()
-//
-//        }
-//    }
-    
     private func startLoadingWeather() {
+        
         self.arrayOfMyCities?.forEach{
-            let urlWeather = "https://api.weatherapi.com/v1/forecast.json?key=\(self.myAPIKeyForWeather)&q=\($0.latitude),\($0.longetude)&days=3&aqi=no&alerts=no"
+            let urlWeather = "https://api.weatherapi.com/v1/forecast.json?key=\(self.myAPIKeyForWeather)&q=\($0.name)&days=3&aqi=no&alerts=no"
             self.network.requestWeather(urlString: urlWeather, completion: { result in
-                
-                self.arrayOfWeatherForMyCities?.append(result)
                 DispatchQueue.main.async {
+                    
+                    self.arrayOfWeatherForMyCities?.append(result)
+                    
                     self.collectionView.reloadData()
                 }
             })
         }
     }
     
-    private func addCityToMyCities(city: City) {
-        arrayOfMyCities?.append(City(name: city.name, latitude: city.latitude, longetude: city.longetude, country: city.country, state: city.state))
-        collectionView.reloadData()
-    }
-    
-
-    
-}
-
-extension CityCollectionVC: CLLocationManagerDelegate {
-    
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        if let lastLocation = locations.last {
-            print(lastLocation.coordinate)
-            let urlCity = "https://api.openweathermap.org/geo/1.0/reverse?lat=\(lastLocation.coordinate.latitude)&lon=\(lastLocation.coordinate.longitude)&limit=5&appid=\(myAPIKeyForCity)"
-            network.requestCity(urlString: urlCity, completion: { result in
-                
-                if let city = result?.last{
-                    if !(self.arrayOfMyCities?.contains(where: { city == $0 }) ?? false) {
-                        self.addCityToMyCities(city: city)
-                        print(self.arrayOfMyCities)
-                        
-                    }
-                }
-            })
-
-        }
-    }
-    
-    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        print("Failed to find user's location: \(error.localizedDescription)")
-    }
     
 }

@@ -19,6 +19,7 @@ class CityCollectionViewCell: UICollectionViewCell {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        
     }
     
     required init?(coder: NSCoder) {
@@ -26,7 +27,7 @@ class CityCollectionViewCell: UICollectionViewCell {
     }
     
     func configure(inputWeather: Weather) {
-
+        
         currentWeather = inputWeather
         let elements = [cityNameLabel, currentTempLabel, currentImage, humidityLabel, windLabel, forecastTable]
         cityNameLabel.text = inputWeather.location.name
@@ -45,7 +46,7 @@ class CityCollectionViewCell: UICollectionViewCell {
         
         windLabel.text = "wind \(inputWeather.current.wind_kph) kph"
         windLabel.font = UIFont.systemFont(ofSize: 30)
-       
+        
         forecastTable.dataSource = self
         forecastTable.delegate = self
         forecastTable.backgroundColor = UIColor(white: 1, alpha: 0.5)
@@ -65,7 +66,7 @@ class CityCollectionViewCell: UICollectionViewCell {
         }
         
         backgroundColor = inputWeather.current.is_day == 1 ?  UIColor(red: 0, green: 0.5373, blue: 0.8275, alpha: 1.0) : UIColor(red: 0.098, green: 0.0275, blue: 0, alpha: 1.0)
-        
+        forecastTable.reloadData()
         setElements()
     }
     
@@ -100,7 +101,6 @@ class CityCollectionViewCell: UICollectionViewCell {
             
         ])
     }
-    
 }
 
 extension CityCollectionViewCell: UITableViewDelegate, UITableViewDataSource {
