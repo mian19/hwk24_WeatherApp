@@ -35,7 +35,7 @@ class CityCollectionVC: UICollectionViewController, UICollectionViewDelegateFlow
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        NotificationCenter.default.addObserver(self, selector: #selector(willEnterForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
         navigationController?.isNavigationBarHidden = true
         layout.scrollDirection = .horizontal
         
@@ -52,18 +52,30 @@ class CityCollectionVC: UICollectionViewController, UICollectionViewDelegateFlow
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        
+   
+            
+        
         if arrayOfMyCities?.count == 0 {
             goToMyCities()
+            
         }
         
         arrayOfWeatherForMyCities = []
         
         locationManager.requestWhenInUseAuthorization()
+
         startLoadingWeather()
     }
     
     override var prefersStatusBarHidden: Bool {
         return true
+    }
+    
+    @objc func willEnterForeground() {
+        print("willEnterForeground")
+        arrayOfWeatherForMyCities = []
+        startLoadingWeather()
     }
     
     @objc func goToMyCities() {
